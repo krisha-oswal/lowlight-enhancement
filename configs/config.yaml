@@ -1,0 +1,114 @@
+# ============================================================
+# Low-Light Detection Experiment Configuration
+# ============================================================
+
+# --- Paths ---
+paths:
+  dataset_root: "data/ExDark"
+  images_dir: "data/ExDark/images"
+  annotations_dir: "data/ExDark/annotations"
+  results_dir: "results"
+  enhanced_cache_dir: "results/enhanced_cache"
+  detection_results_dir: "results/detections"
+  metrics_dir: "results/metrics"
+  selector_dir: "results/selector"
+  plots_dir: "results/plots"
+  zero_dce_weights: "preprocessing/zero_dce_weights.pth"
+
+# --- Dataset ---
+dataset:
+  # ExDark 12 classes mapped to COCO indices for YOLOv8
+  classes:
+    - Bicycle
+    - Boat
+    - Bottle
+    - Bus
+    - Car
+    - Cat
+    - Chair
+    - Cup
+    - Dog
+    - Motorbike
+    - People
+    - Table
+  # Map ExDark class names to COCO class IDs (YOLOv8 COCO pretrained)
+  exdark_to_coco:
+    Bicycle: 1
+    Boat: 8
+    Bottle: 39
+    Bus: 5
+    Car: 2
+    Cat: 15
+    Chair: 56
+    Cup: 41
+    Dog: 16
+    Motorbike: 3
+    People: 0
+    Table: 60
+  max_images: null  # Set to integer to limit (e.g., 500 for fast testing)
+  image_extensions: [".jpg", ".jpeg", ".png", ".bmp"]
+
+# --- Enhancement Methods ---
+enhancement:
+  methods:
+    - baseline
+    - histogram_eq
+    - clahe
+    - gamma_correction
+    - retinex
+    - zero_dce
+  clahe:
+    clip_limit: 2.0
+    tile_grid_size: [8, 8]
+  gamma_correction:
+    gamma: 1.5
+  retinex:
+    sigma_list: [15, 80, 250]
+    G: 192
+    b: -30
+    alpha: 125
+    beta: 46
+    low_clip: 0.01
+    high_clip: 0.99
+  zero_dce:
+    n_filters: 32
+    n_iters: 8
+
+# --- Detection ---
+detection:
+  model: "yolov8n.pt"        # yolov8n/s/m/l/x — use 'n' for speed
+  confidence_threshold: 0.25
+  iou_threshold: 0.45
+  image_size: 640
+  device: "cpu"              # 'cuda' if GPU available
+  batch_size: 1
+
+# --- Evaluation ---
+evaluation:
+  iou_threshold_map: 0.5     # IoU for mAP@0.5
+  iou_thresholds_coco: [0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+
+# --- Selector ---
+selector:
+  models:
+    - random_forest
+    - xgboost
+    - mlp
+  test_size: 0.2
+  random_state: 42
+  cross_val_folds: 5
+  random_forest:
+    n_estimators: 200
+    max_depth: 10
+    min_samples_split: 5
+  xgboost:
+    n_estimators: 200
+    max_depth: 6
+    learning_rate: 0.1
+  mlp:
+    hidden_layer_sizes: [128, 64, 32]
+    max_iter: 500
+    early_stopping: true
+
+# --- Reproducibility ---
+seed: 42
