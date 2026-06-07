@@ -89,8 +89,4 @@ data/ExDark/
 | Retinex (MSR) | Classical | sigma=[15,80,250] |
 | Zero-DCE | Deep Learning | pretrained weights |
 
-## Citation
-If you use this framework, please cite:
-```
-[Your paper citation here]
-```
+
